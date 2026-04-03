@@ -322,6 +322,40 @@ def _install_dependencies() -> Path:
     else:
         print('  ✓ voila already installed')
 
+    required_imports = [
+        ('voila', 'voila'),
+        ('ipywidgets', 'ipywidgets'),
+        ('numpy', 'numpy'),
+        ('pandas', 'pandas'),
+        ('matplotlib', 'matplotlib'),
+        ('seaborn', 'seaborn'),
+        ('tqdm', 'tqdm'),
+        ('requests', 'requests'),
+        ('torch', 'torch'),
+        ('sentence-transformers', 'sentence_transformers'),
+    ]
+
+    missing = []
+    for package_name, import_name in required_imports:
+        result = subprocess.run(
+            [str(venv_py), '-c', f'import {import_name}'],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            missing.append(package_name)
+
+    if missing:
+        print('  ✗ Some required Python packages are still missing:')
+        for name in missing:
+            print(f'    - {name}')
+        print('  Re-run the installer with a supported Python version, or install the missing packages into the selected environment.')
+        if platform.system() == 'Windows' and sys.version_info >= (3, 14):
+            print('  Windows note: Python 3.14 may not yet have compatible wheels for all ML dependencies.')
+        sys.exit(1)
+
+    print('  ✓ Core Python packages verified')
+
     return venv_py
 
 
