@@ -338,6 +338,8 @@ def _is_already_extracted(spec: dict, install_dir: Path) -> bool:
     """Return True if this download's files are already present in any known workspace."""
     filename = spec['filename']
     subdir = spec['extract_to'].rstrip('/')
+    expected_files = spec.get('expected_files', [])
+    expected_any = spec.get('expected_any', [])
 
     # Candidate locations: chosen install dir + repo-local workspace
     candidates = [
@@ -345,9 +347,28 @@ def _is_already_extracted(spec: dict, install_dir: Path) -> bool:
         REPO_ROOT / DEFAULT_INSTALL_DIR / subdir,
     ]
 
+    def _contains_expected_files(extract_to: Path) -> bool:
+        if not extract_to.is_dir():
+            return False
+
+        def _exists_anywhere(name: str) -> bool:
+            return any(p.is_file() for p in extract_to.rglob(name))
+
+        if expected_files and not all(_exists_anywhere(name) for name in expected_files):
+            return False
+
+        for group in expected_any:
+            if not any(_exists_anywhere(name) for name in group):
+                return False
+
+        if expected_files or expected_any:
+            return True
+
+        return any(f.is_file() for f in extract_to.rglob('*'))
+
     for extract_to in candidates:
         if filename.endswith('.zip'):
-            if extract_to.is_dir() and any(f.is_file() for f in extract_to.rglob('*')):
+            if _contains_expected_files(extract_to):
                 return True
         else:
             if (extract_to / filename).exists():

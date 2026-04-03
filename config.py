@@ -23,6 +23,16 @@ DOWNLOADS = {
         'size_mb': 4116.314,
         'size_gb': 4.019838,
         'extract_to': 'model/',
+        'expected_files': [
+            'countries_dict.json',
+            'documents_dict.json',
+            'encoded_segments.json',
+            'segments_dict.json',
+            'segment_encodings_metadata.json',
+        ],
+        'expected_any': [
+            ['segment_encodings.f32.memmap', 'segment_encodings.npy', 'segment_encodings.json'],
+        ],
         'required': True,
         'description': 'Model files: MPNet embeddings and segment data (~4.6GB uncompressed)'
     },
@@ -31,6 +41,10 @@ DOWNLOADS = {
         'size_mb': 0.073,
         'size_gb': 0.000071,
         'extract_to': 'metadata/',
+        'expected_files': [
+            'document_metadata.csv',
+            'Country_metadata.csv',
+        ],
         'required': True,
         'description': 'Metadata: document and country information'
     },
