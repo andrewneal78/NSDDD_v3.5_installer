@@ -136,14 +136,14 @@ CORE_DEPENDENCIES = [
     'ipywidgets>=8.0.0',
     'tqdm>=4.65.0',
     'requests>=2.31.0',
-    'psutil>=5.9.0'
-]
-
-# Optional dependencies for visualisation
-OPTIONAL_DEPENDENCIES = [
+    'psutil>=5.9.0',
+    'pandas>=1.5.0',
     'matplotlib>=3.7.0',
     'seaborn>=0.12.0',
-    'pandas>=1.5.0'
+]
+
+# Optional dependencies for future extensions
+OPTIONAL_DEPENDENCIES = [
 ]
 
 # Download and verification settings
