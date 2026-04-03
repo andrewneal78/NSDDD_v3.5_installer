@@ -51,6 +51,7 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 After extracting the ZIP, right-click the extracted installer folder and open a terminal there.
 
 - **Mac:** choose **Open in Terminal**, **New Terminal at Folder**, or **New Terminal Tab at Folder**.
+- On some Macs, these options appear inside the **Services** submenu.
 - **Windows:** choose **Open in Terminal**.
 - **If you are testing in Parallels or another VM:** copy or extract the installer into a local Windows folder such as `C:\Users\your-name\Downloads\...` first. Do not run the installer from a shared Mac path like `\\Mac\Home\...`.
 - **If you do not see that option:** open the extracted folder first, then open a terminal in that exact folder before running the installer.
