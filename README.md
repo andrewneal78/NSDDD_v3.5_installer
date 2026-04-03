@@ -46,9 +46,9 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 - **Mac, easiest:** in Finder, open the extracted installer folder. Then right-click inside that folder and choose **New Terminal at Folder** or **New Terminal Tab at Folder** if that option is available.
 - **Mac, alternative:** open Terminal, type `cd ` (with a space), drag the extracted installer folder into the Terminal window, and press Enter.
 - **Mac, important:** do not paste the folder path by itself. For example, this is wrong: `/Users/you/NSDDD_v3.5_installer-main`. Terminal will try to run the folder as a program and show `permission denied`.
-- **Windows, easiest:** in File Explorer, open the extracted installer folder, click the address bar, type `cmd`, and press Enter. This opens Command Prompt in the correct folder.
-- **Windows, alternative:** in File Explorer, open the extracted installer folder, then right-click inside the folder and choose **Open in Terminal** if available.
-- **Windows, important:** do not run the installer from `C:\Windows\System32`. The prompt should show the extracted installer folder before you run anything.
+- **Windows, easiest:** in File Explorer, open the extracted installer folder, click the address bar once, copy the full folder path, open Command Prompt, then run `cd /d "PASTE-THE-FOLDER-PATH-HERE"`.
+- **Windows, alternative:** in File Explorer, open the extracted installer folder, click the address bar, type `cmd`, and press Enter. On some Windows or Parallels setups this may still open in `C:\Windows\System32`, so check the prompt before running anything.
+- **Windows, important:** do not run the installer from `C:\Windows\System32`. If that happens, run `cd /d "C:\path\to\NSDDD_v3.5_installer-main"` first.
 
 ---
 
@@ -197,6 +197,7 @@ Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" o
 This usually means Command Prompt or Terminal was opened in the wrong folder, often `C:\Windows\System32`. Open the extracted installer folder in File Explorer, click the address bar, type `cmd`, press Enter, then run:
 
 ```bat
+cd /d "C:\path\to\NSDDD_v3.5_installer-main"
 python install.py
 ```
 
