@@ -443,10 +443,18 @@ def main():
 
     # Initialise DataShare client
     client = DataShareClient(DATASHARE_API_BASE, DATASHARE_HANDLE)
+    try:
+        client.list_bitstreams()
+    except Exception as e:
+        print()
+        print(f'Could not connect to Edinburgh DataShare: {e}')
+        print('Please check your internet connection and run the installer again.')
+        sys.exit(1)
 
     # Create directory structure
     dirs = create_directory_structure(str(install_dir))
     downloads_dir = dirs['downloads']
+    failed_required = []
 
     # Download each selected file
     for key in all_selected:
@@ -467,6 +475,7 @@ def main():
             expected_bytes = file_info['size_bytes']
         except Exception as e:
             print(f'  ✗ Could not resolve {filename}: {e}')
+            failed_required.append(filename)
             continue
 
         dest = downloads_dir / filename
@@ -487,6 +496,7 @@ def main():
             print(' ✓')
         except Exception as e:
             print(f'\n  ✗ Download failed: {e}')
+            failed_required.append(filename)
             continue
 
         # Extract
@@ -500,11 +510,24 @@ def main():
                 dest.unlink(missing_ok=True)
             except Exception as e:
                 print(f'\n  ✗ Extraction failed: {e}')
+                failed_required.append(filename)
         else:
             # Plain file — just move to destination
             extract_to.mkdir(parents=True, exist_ok=True)
             import shutil as _shutil
-            _shutil.move(str(dest), str(extract_to / filename))
+            try:
+                _shutil.move(str(dest), str(extract_to / filename))
+            except Exception as e:
+                print(f'\n  ✗ Move failed: {e}')
+                failed_required.append(filename)
+
+    if failed_required:
+        print()
+        print('Installation could not continue because required files failed:')
+        for name in sorted(set(failed_required)):
+            print(f'  - {name}')
+        print('Re-run `python3 install.py` to retry the missing required files.')
+        sys.exit(1)
 
     print()
     print('Installing dependencies...')

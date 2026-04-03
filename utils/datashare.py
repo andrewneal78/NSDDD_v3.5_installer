@@ -7,6 +7,7 @@ Module for interacting with Edinburgh DataShare API to list and retrieve files.
 from typing import List, Dict, Optional
 import json
 import subprocess
+import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
@@ -46,29 +47,64 @@ class DataShareClient:
             self.session = requests.Session()
             self.session.headers.update(self.headers)
         self._item_id = None
+        self._bitstreams = None
 
-    def _get_json(self, url: str, timeout: int = 10) -> Dict | List[Dict]:
-        """Fetch JSON using requests when available, else urllib."""
-        if self.session is not None:
-            response = self.session.get(url, timeout=timeout)
-            response.raise_for_status()
-            return response.json()
+    def _get_json_requests(self, url: str, timeout: int):
+        if self.session is None:
+            raise RuntimeError('requests not available')
+        response = self.session.get(url, timeout=timeout)
+        response.raise_for_status()
+        return response.json()
 
+    def _get_json_stdlib(self, url: str, timeout: int):
         request = Request(url, headers=self.headers)
-        try:
-            with urlopen(request, timeout=timeout) as response:
-                return json.loads(response.read().decode('utf-8'))
-        except (HTTPError, URLError) as e:
-            try:
-                result = subprocess.run(
-                    ['curl', '-fsSL', '--max-time', str(timeout), url],
-                    capture_output=True,
-                    text=True,
-                    check=True,
-                )
-                return json.loads(result.stdout)
-            except Exception:
-                raise ConnectionError(f'Failed to fetch {url}: {e}') from e
+        with urlopen(request, timeout=timeout) as response:
+            return json.loads(response.read().decode('utf-8'))
+
+    def _get_json_curl(self, url: str, timeout: int):
+        result = subprocess.run(
+            [
+                'curl',
+                '-fsSL',
+                '--retry', '4',
+                '--retry-delay', '2',
+                '--retry-all-errors',
+                '--connect-timeout', str(timeout),
+                '--max-time', str(timeout * 3),
+                '-A', self.headers['User-Agent'],
+                url,
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return json.loads(result.stdout)
+
+    def _get_json(self, url: str, timeout: int = 10, attempts: int = 3) -> Dict | List[Dict]:
+        """Fetch JSON with retries across requests, stdlib HTTPS, and curl."""
+        last_error = None
+        backoffs = [0, 2, 5]
+
+        for attempt in range(attempts):
+            if attempt < len(backoffs) and backoffs[attempt] > 0:
+                time.sleep(backoffs[attempt])
+
+            methods = []
+            if self.session is not None:
+                methods.append(('requests', self._get_json_requests))
+            methods.extend([
+                ('urllib', self._get_json_stdlib),
+                ('curl', self._get_json_curl),
+            ])
+
+            for _, method in methods:
+                try:
+                    return method(url, timeout)
+                except Exception as e:
+                    last_error = e
+                    continue
+
+        raise ConnectionError(f'Failed to fetch {url}: {last_error}') from last_error
 
     def get_item_metadata(self) -> Dict:
         """
@@ -116,10 +152,14 @@ class DataShareClient:
         Raises:
             ConnectionError: If API request fails
         """
+        if self._bitstreams is not None:
+            return self._bitstreams
+
         item_id = self._get_item_id()
         url = f'{self.api_base}/items/{item_id}/bitstreams'
-        data = self._get_json(url, timeout=10)
-        return data if isinstance(data, list) else []
+        data = self._get_json(url, timeout=15, attempts=4)
+        self._bitstreams = data if isinstance(data, list) else []
+        return self._bitstreams
 
     def get_download_url(self, bitstream_uuid: str) -> str:
         """
