@@ -70,9 +70,9 @@ def _check_windows_python_compatibility() -> bool:
         return True
 
     v = sys.version_info
-    if (v.major, v.minor) >= (3, 14):
+    if (v.major, v.minor) >= (3, 13):
         print('  ✗ Windows Python compatibility: Python 3.11 or 3.12 is required')
-        print('    PyTorch / sentence-transformers are not working reliably in this installer on Windows with Python 3.14.')
+        print('    PyTorch / sentence-transformers are not working reliably in this installer on Windows with Python 3.13+.')
         return False
 
     return True

@@ -31,7 +31,7 @@ If you see `Python 3.9` or higher, you're ready. If not (or if the command isn't
 
 **Windows note:** use **Python 3.12.10 Windows installer (64-bit)**: [python-3.12.10-amd64.exe](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe)
 
-If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead. Do not use Python 3.14 for this installer.
+If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead. **Python 3.13 and later are not currently supported on Windows for this installer.**
 
 ---
 
@@ -197,7 +197,7 @@ If you use NSDDD v3.5 in research, please cite:
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
 
 **Windows semantic search says the encoder is not loaded**
-This is usually a Python compatibility problem in the Windows environment. Install **Python 3.12.10 Windows installer (64-bit)**, delete the local `.venv` folder, and run `python install.py` again from the local Windows installer folder. If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead.
+This is usually a Python compatibility problem in the Windows environment. Install **Python 3.12.10 Windows installer (64-bit)**, delete the local `.venv` folder, and run `python install.py` again from the local Windows installer folder. If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead. **Python 3.13 and later are not currently supported on Windows for this installer.**
 
 **Windows says it cannot open `install.py`**
 This usually means Terminal or Command Prompt was opened in the wrong folder, often `C:\Windows\System32`. The easiest fix is to close that window, go back to the extracted installer folder, right-click that folder, choose **Open in Terminal**, then run:
