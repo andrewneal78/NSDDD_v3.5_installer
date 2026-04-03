@@ -18,6 +18,7 @@ import tempfile
 import threading
 import time
 import urllib.request
+import urllib.error
 import zipfile
 from pathlib import Path
 
@@ -335,19 +336,44 @@ def build_voila_command(py: str) -> list[str]:
     return cmd
 
 
-def open_browser_delayed(url: str, delay_seconds: float = 3.0):
-    """Open the browser after a short delay without blocking server startup."""
+def open_browser(url: str):
+    """Open the app URL using a platform-appropriate method."""
+    try:
+        if os.name == "nt":
+            os.startfile(url)  # type: ignore[attr-defined]
+            return
+    except Exception:
+        pass
+
     import webbrowser
 
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
+
+
+def open_browser_delayed(url: str, delay_seconds: float = 3.0):
+    """Open the browser after a short delay without blocking server startup."""
     def _open():
-        try:
-            webbrowser.open(url)
-        except Exception:
-            pass
+        open_browser(url)
 
     timer = threading.Timer(delay_seconds, _open)
     timer.daemon = True
     timer.start()
+
+
+def wait_for_server(url: str, timeout_seconds: float = 20.0) -> bool:
+    """Poll until the local server responds or timeout expires."""
+    deadline = time.time() + timeout_seconds
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=2) as resp:
+                if resp.status < 500:
+                    return True
+        except Exception:
+            time.sleep(0.5)
+    return False
 
 
 def main():
@@ -367,15 +393,28 @@ def main():
     cmd = build_voila_command(py)
 
     if args.detach:
+        log_path = cwd / "launch.log"
+        log_file = open(log_path, "a", encoding="utf-8")
+        log_file.write(f"\n=== Launch at {time.strftime('%Y-%m-%d %H:%M:%S')} ===\n")
+        log_file.flush()
         proc = subprocess.Popen(
             cmd,
             cwd=str(cwd),
             start_new_session=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stdout=log_file,
+            stderr=subprocess.STDOUT,
         )
-        print(f"Starting NSDDD search interface... (PID {proc.pid})")
-        open_browser_delayed(URL, delay_seconds=3.0)
+        if wait_for_server(URL, timeout_seconds=20.0):
+            open_browser(URL)
+            sys.exit(0)
+
+        rc = proc.poll()
+        if rc is not None:
+            print(f"NSDDD failed to start. See launch.log for details. (exit code {rc})")
+            sys.exit(1)
+
+        print("NSDDD started, but the browser did not open automatically.")
+        print(f"Open {URL} manually if needed.")
         sys.exit(0)
 
     print("NSDDD Search Interface")
