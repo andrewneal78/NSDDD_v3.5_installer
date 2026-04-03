@@ -85,6 +85,8 @@ The installer will walk you through:
 
 Your browser opens at `http://localhost:8867`. The search interface loads automatically.
 
+If macOS says `"Launch.command" Not Opened` because Apple could not verify it, open **System Settings > Privacy & Security**, scroll to the security message about `Launch.command`, click **Open Anyway**, then run it again. If needed, you can also Control-click `Launch.command`, choose **Open**, then confirm.
+
 > On startup, the launcher checks for installer updates before opening the interface.
 
 > The browser may briefly show "server not found" for a few seconds while Voilà starts.
@@ -218,6 +220,17 @@ cd /path/to/NSDDD_v3.5_installer-main
 ```
 
 or type `cd ` first, then drag the folder in and press Enter.
+
+**`"Launch.command" Not Opened` on Mac**
+This is usually macOS Gatekeeper blocking a file downloaded from the internet. To allow it:
+
+1. Try opening `Launch.command` once.
+2. Open **System Settings > Privacy & Security**.
+3. Scroll down to the message saying `Launch.command` was blocked.
+4. Click **Open Anyway**.
+5. Run `Launch.command` again.
+
+If that still does not work, Control-click `Launch.command`, choose **Open**, then confirm.
 
 **Loading message doesn't clear / interface doesn't appear**
 Wait briefly after launch. The server can take a few seconds to start. If needed, close the tab, wait 10 seconds, and reopen `http://localhost:8867`.
