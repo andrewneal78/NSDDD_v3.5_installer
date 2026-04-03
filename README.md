@@ -29,9 +29,14 @@ python3 --version
 
 If you see `Python 3.9` or higher, you're ready. If not (or if the command isn't found), install Python from https://www.python.org/downloads/ — on Windows, tick **Add Python to PATH** during install.
 
-**Windows note:** use **Python 3.12.10 Windows installer (64-bit)**: [python-3.12.10-amd64.exe](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe)
+**Windows note**
 
-If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead. **Python 3.13 and later are not currently supported on Windows for this installer. If Python 3.13+ is already installed, keep it if you want, but also install Python 3.12.10 and use that version for this installer.**
+Use **Python 3.12.10 Windows installer (64-bit)**:
+[python-3.12.10-amd64.exe](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe)
+
+If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead.
+
+**Python 3.13 and later are not currently supported on Windows for this installer.** If Python 3.13+ is already installed, you do **not** need to uninstall it. Just install Python 3.12.10 as well, then run the installer normally. The installer will create its local environment using the supported Python version.
 
 ---
 
@@ -197,7 +202,14 @@ If you use NSDDD v3.5 in research, please cite:
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
 
 **Windows semantic search says the encoder is not loaded**
-This is usually a Python compatibility problem in the Windows environment. Install **Python 3.12.10 Windows installer (64-bit)**, delete the local `.venv` folder, and run `python install.py` again from the local Windows installer folder. If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead. **Python 3.13 and later are not currently supported on Windows for this installer. If Python 3.13+ is already installed, keep it if you want, but also install Python 3.12.10 and use that version for this installer.**
+This is usually a Python compatibility problem in the Windows environment.
+
+1. Install **Python 3.12.10 Windows installer (64-bit)**.
+2. If you are on **Windows ARM**, use the Python 3.12.10 **Windows installer (ARM64)** instead.
+3. Delete the local `.venv` folder.
+4. Run `python install.py` again from the local Windows installer folder.
+
+**Python 3.13 and later are not currently supported on Windows for this installer.** If Python 3.13+ is already installed, you do **not** need to uninstall it. Just install Python 3.12.10 as well. Deleting `.venv` is only needed if you already created a broken local environment with an unsupported Python version.
 
 **Windows says it cannot open `install.py`**
 This usually means Terminal or Command Prompt was opened in the wrong folder, often `C:\Windows\System32`. The easiest fix is to close that window, go back to the extracted installer folder, right-click that folder, choose **Open in Terminal**, then run:
