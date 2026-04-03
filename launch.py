@@ -43,40 +43,119 @@ HTTP_TIMEOUT_SECONDS = 8
 PRESERVE_TOP_LEVEL = {
     ".git",
     ".venv",
-    "NSDDD_v3_workspace",
+    "NSDDD_v3.5_workspace",
     "outputs",
     "__pycache__",
     ".ipynb_checkpoints",
 }
 
 
+def configured_python(cwd: Path) -> str | None:
+    """Return the installer-selected Python, if recorded and still present."""
+    config_path = cwd / "install_config.json"
+    if not config_path.exists():
+        return None
+
+    try:
+        import json
+
+        data = json.loads(config_path.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+    python_path = data.get("python")
+    if not python_path:
+        return None
+
+    py = Path(python_path)
+    return str(py) if py.exists() else None
+
+
 def find_python():
     """Return a Python executable that has voila importable."""
-    candidates = [
-        Path.home() / ".venv" / "bin" / "python3",
-        Path(sys.executable),
-    ]
+    cwd = Path(__file__).parent
+    candidates = []
+
+    configured = configured_python(cwd)
+    if configured:
+        candidates.append(Path(configured))
+
+    if os.name == "nt":
+        candidates.extend(
+            [
+                cwd / ".venv" / "Scripts" / "python.exe",
+                cwd / "venv" / "Scripts" / "python.exe",
+                Path.home() / ".venv" / "Scripts" / "python.exe",
+                Path.home() / "venv" / "Scripts" / "python.exe",
+            ]
+        )
+    else:
+        candidates.extend(
+            [
+                cwd / ".venv" / "bin" / "python3",
+                cwd / "venv" / "bin" / "python3",
+                Path.home() / ".venv" / "bin" / "python3",
+                Path.home() / "venv" / "bin" / "python3",
+            ]
+        )
+
+    candidates.append(Path(sys.executable))
+
+    seen = set()
     for py in candidates:
-        if py.exists():
-            r = subprocess.run([str(py), "-c", "import voila"], capture_output=True)
-            if r.returncode == 0:
-                return str(py)
+        if not py.exists():
+            continue
+        resolved = str(py.resolve())
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        r = subprocess.run([str(py), "-c", "import voila"], capture_output=True)
+        if r.returncode == 0:
+            return str(py)
     return sys.executable
 
 
 def stop_existing():
     """Terminate any process already bound to the launch port."""
     killed = False
-    try:
-        result = subprocess.run(["lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True)
-        for pid_str in result.stdout.split():
-            try:
-                os.kill(int(pid_str), signal.SIGTERM)
-                killed = True
-            except (ProcessLookupError, ValueError):
-                pass
-    except FileNotFoundError:
-        pass
+
+    if os.name == "nt":
+        try:
+            result = subprocess.run(
+                ["netstat", "-ano", "-p", "tcp"],
+                capture_output=True,
+                text=True,
+            )
+            for line in result.stdout.splitlines():
+                if f":{PORT}" not in line or "LISTENING" not in line.upper():
+                    continue
+                parts = line.split()
+                if not parts:
+                    continue
+                pid_str = parts[-1]
+                try:
+                    subprocess.run(
+                        ["taskkill", "/PID", pid_str, "/T", "/F"],
+                        capture_output=True,
+                        text=True,
+                    )
+                    killed = True
+                except Exception:
+                    pass
+        except FileNotFoundError:
+            pass
+    else:
+        try:
+            result = subprocess.run(["lsof", "-ti", f"tcp:{PORT}"], capture_output=True, text=True)
+            for pid_str in result.stdout.split():
+                try:
+                    os.kill(int(pid_str), signal.SIGTERM)
+                    killed = True
+                except (ProcessLookupError, ValueError):
+                    pass
+        except FileNotFoundError:
+            pass
+
     if killed:
         time.sleep(1)
 

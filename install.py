@@ -424,7 +424,8 @@ def main():
         dest = downloads_dir / filename
         size_str = (
             f'{size_mb / 1024:.1f} GB' if size_mb >= 1024
-            else f'{size_mb:.0f} MB'
+            else f'{size_mb:.0f} MB' if size_mb >= 1
+            else f'{size_mb:.3f} MB'
         )
         print(f'  {filename:<45} {size_str:>8}', end='  ', flush=True)
 

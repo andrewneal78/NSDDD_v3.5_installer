@@ -138,7 +138,7 @@ The browser-based interface provides:
 | Segments | 787,844 sentence-level |
 | Embedding model | `all-mpnet-base-v2` (768-dimensional) |
 | Languages | English + translations for 80+ countries |
-| DataShare | https://datashare.ed.ac.uk/handle/10283/XXXX |
+| DataShare | https://datashare.ed.ac.uk/handle/10283/9182 |
 
 Document types included: national security strategies (NSS), defence white papers (WP), defence and security reviews (DD), and treaty/alignment documents (TA).
 
@@ -166,7 +166,7 @@ jupyter notebook VERIFY.ipynb
 
 If you use NSDDD v3.5 in research, please cite:
 
-> Neal, A. W., & Gardner, R. B. (2026). *National Security and Defence Documents Dataset (1987–2025) v3.5*. University of Edinburgh. Edinburgh DataShare. https://datashare.ed.ac.uk/handle/10283/XXXX
+> Neal, A. W., & Gardner, R. B. (2026). *National Security and Defence Documents Dataset (1987–2025) v3.5*. University of Edinburgh. Edinburgh DataShare. https://datashare.ed.ac.uk/handle/10283/9182
 
 ```bibtex
 @dataset{neal_gardner_2026_nsddd_v3.5,
@@ -175,7 +175,7 @@ If you use NSDDD v3.5 in research, please cite:
   year        = {2026},
   publisher   = {Edinburgh DataShare},
   institution = {University of Edinburgh},
-  url         = {https://datashare.ed.ac.uk/handle/10283/XXXX}
+  url         = {https://datashare.ed.ac.uk/handle/10283/9182}
 }
 ```
 

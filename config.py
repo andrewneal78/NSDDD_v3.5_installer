@@ -9,9 +9,8 @@ the National Security Documents Dataset (NSDDD) version 3.5 from Edinburgh DataS
 DATASHARE_API_BASE = 'https://datashare.ed.ac.uk/rest'
 
 # DataShare handle for NSDDD v3.5
-# TODO: replace with the new v3.5 DataShare handle after deposit is created
-# https://datashare.ed.ac.uk/handle/10283/XXXX
-DATASHARE_HANDLE = '10283/XXXX'
+# https://datashare.ed.ac.uk/handle/10283/9182
+DATASHARE_HANDLE = '10283/9182'
 
 # Construct base URL for files
 DATASHARE_ITEM_URL = f'{DATASHARE_API_BASE}/handle/{DATASHARE_HANDLE}'
@@ -21,40 +20,40 @@ DOWNLOADS = {
     # REQUIRED downloads (essential for semantic search)
     'model_files': {
         'filename': 'model_files.zip',
-        'size_mb': 4096,
-        'size_gb': 4.0,
+        'size_mb': 4116.314,
+        'size_gb': 4.019838,
         'extract_to': 'model/',
         'required': True,
         'description': 'Model files: MPNet embeddings and segment data (~4.6GB uncompressed)'
     },
     'metadata': {
         'filename': 'metadata.zip',
-        'size_mb': 1,
-        'size_gb': 0.001,
+        'size_mb': 0.073,
+        'size_gb': 0.000071,
         'extract_to': 'metadata/',
         'required': True,
         'description': 'Metadata: document and country information'
     },
     'whats_new': {
         'filename': 'WHATS_NEW_IN_NSDDD_V3.5.md',
-        'size_mb': 0.015,
-        'size_gb': 0.000015,
+        'size_mb': 0.016,
+        'size_gb': 0.000016,
         'extract_to': 'documentation/',
         'required': True,
         'description': 'Complete overview of v3.5 improvements and features'
     },
     'inclusion_criteria': {
         'filename': 'dataset_inclusion_criteria.md',
-        'size_mb': 0.025,
-        'size_gb': 0.000025,
+        'size_mb': 0.024,
+        'size_gb': 0.000024,
         'extract_to': 'documentation/',
         'required': True,
         'description': 'Document selection criteria and methodology'
     },
     'readme': {
         'filename': 'README.txt',
-        'size_mb': 0.007,
-        'size_gb': 0.000007,
+        'size_mb': 0.010,
+        'size_gb': 0.000010,
         'extract_to': 'documentation/',
         'required': True,
         'description': 'Quick start guide'
@@ -79,32 +78,32 @@ DOWNLOADS = {
     # OPTIONAL downloads (user chooses which to download)
     'clean_text': {
         'filename': 'clean_text_documents_English_and_translated.zip',
-        'size_mb': 44,
-        'size_gb': 0.044,
+        'size_mb': 43.646,
+        'size_gb': 0.042623,
         'extract_to': 'documents/',
         'optional': True,
         'description': '671 plain text documents (English + translated)'
     },
     'spacy': {
         'filename': 'spacy_documents.zip',
-        'size_mb': 46,
-        'size_gb': 0.046,
+        'size_mb': 46.064,
+        'size_gb': 0.044984,
         'extract_to': 'documents/',
         'optional': True,
         'description': '671 sentence-segmented documents'
     },
     'pdf_originals': {
         'filename': 'pdf_originals.zip',
-        'size_mb': 7065,
-        'size_gb': 6.9,
+        'size_mb': 7101.902,
+        'size_gb': 6.935451,
         'extract_to': 'documents/',
         'optional': True,
         'description': '671 original PDFs organized by country'
     },
     'original_language': {
         'filename': 'original_language_documents.zip',
-        'size_mb': 10,
-        'size_gb': 0.010,
+        'size_mb': 10.001,
+        'size_gb': 0.009766,
 
         'extract_to': 'documents/',
         'optional': True,
@@ -112,8 +111,8 @@ DOWNLOADS = {
     },
     'original_language_spacy': {
         'filename': 'original_language_spacy.zip',
-        'size_mb': 11,
-        'size_gb': 0.011,
+        'size_mb': 10.476,
+        'size_gb': 0.010231,
         'extract_to': 'documents/',
         'optional': True,
         'description': 'Original language sentence-segmented files'
