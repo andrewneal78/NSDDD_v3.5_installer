@@ -441,9 +441,9 @@ def get_free_disk_space(path: str) -> dict:
         target = target.parent
 
     try:
-        stat = os.statvfs(target)
-        free_bytes = stat.f_bavail * stat.f_frsize
-        total_bytes = stat.f_blocks * stat.f_frsize
+        usage = shutil.disk_usage(target)
+        free_bytes = usage.free
+        total_bytes = usage.total
 
         return {
             'free_mb': round(free_bytes / (1024 ** 2), 2),
