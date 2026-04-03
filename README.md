@@ -37,14 +37,16 @@ If you see `Python 3.9` or higher, you're ready. If not (or if the command isn't
 
 ### Step 1 — Download the installer
 
-Click the green **Code** button on this page, then **Download ZIP**. Extract the ZIP — you'll get a folder called `NSDDD_v3.5_installer`.
+Click the green **Code** button on this page, then **Download ZIP**. Extract the ZIP — GitHub will usually create a folder called `NSDDD_v3.5_installer-main`.
 
 ---
 
 ### Step 2 — Open a terminal in that folder
 
-- **Mac:** press `Cmd + Space`, type `Terminal`, press Enter — then type `cd ` (with a space), drag the `NSDDD_v3.5_installer` folder into the Terminal window, and press Enter
-- **Windows:** open the `NSDDD_v3.5_installer` folder in File Explorer, click the address bar at the top, type `cmd`, press Enter
+- **Mac, easiest:** in Finder, open the extracted installer folder, then right-click the folder itself or its parent location and choose **New Terminal at Folder** or **New Terminal Tab at Folder** if that option is available on your Mac.
+- **Mac, alternative:** press `Cmd + Space`, type `Terminal`, press Enter. Then type `cd ` (with a space), drag the extracted installer folder into the Terminal window, and press Enter. Do not paste the folder path by itself — if you do, Terminal will try to run the folder as a command and show `permission denied`.
+- **Windows, easiest:** in File Explorer, open the extracted installer folder, then right-click inside the folder and choose **Open in Terminal** if available.
+- **Windows, alternative:** open the `NSDDD_v3.5_installer` folder in File Explorer, click the address bar at the top, type `cmd`, press Enter
 
 ---
 
@@ -185,6 +187,15 @@ If you use NSDDD v3.5 in research, please cite:
 
 **`python3` not found**
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
+
+**`permission denied` after dragging the folder into Terminal (Mac)**
+This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. Instead, use:
+
+```bash
+cd /path/to/NSDDD_v3.5_installer-main
+```
+
+or type `cd ` first, then drag the folder in and press Enter.
 
 **Loading message doesn't clear / interface doesn't appear**
 Wait briefly after launch. The server can take a few seconds to start. If needed, close the tab, wait 10 seconds, and reopen `http://localhost:8867`.

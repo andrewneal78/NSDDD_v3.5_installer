@@ -4,9 +4,16 @@ Edinburgh DataShare REST API Client
 Module for interacting with Edinburgh DataShare API to list and retrieve files.
 """
 
-import requests
 from typing import List, Dict, Optional
 import json
+import subprocess
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+try:
+    import requests
+except ImportError:  # pragma: no cover - exercised on clean installer hosts
+    requests = None
 
 
 class DataShareClient:
@@ -30,12 +37,38 @@ class DataShareClient:
         """
         self.api_base = api_base.rstrip('/')
         self.handle = handle
-        self.session = requests.Session()
-        self.session.headers.update({
+        self.headers = {
             'User-Agent': 'NSDDD-v3-Installer/1.0',
             'Accept': 'application/json'
-        })
+        }
+        self.session = None
+        if requests is not None:
+            self.session = requests.Session()
+            self.session.headers.update(self.headers)
         self._item_id = None
+
+    def _get_json(self, url: str, timeout: int = 10) -> Dict | List[Dict]:
+        """Fetch JSON using requests when available, else urllib."""
+        if self.session is not None:
+            response = self.session.get(url, timeout=timeout)
+            response.raise_for_status()
+            return response.json()
+
+        request = Request(url, headers=self.headers)
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                return json.loads(response.read().decode('utf-8'))
+        except (HTTPError, URLError) as e:
+            try:
+                result = subprocess.run(
+                    ['curl', '-fsSL', '--max-time', str(timeout), url],
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                return json.loads(result.stdout)
+            except Exception:
+                raise ConnectionError(f'Failed to fetch {url}: {e}') from e
 
     def get_item_metadata(self) -> Dict:
         """
@@ -45,14 +78,11 @@ class DataShareClient:
             Dictionary with item metadata including UUID, title, description
 
         Raises:
-            requests.RequestException: If API request fails
+            ConnectionError: If API request fails
             ValueError: If handle not found
         """
         url = f'{self.api_base}/handle/{self.handle}'
-        response = self.session.get(url, timeout=10)
-        response.raise_for_status()
-
-        data = response.json()
+        data = self._get_json(url, timeout=10)
         if not data or 'uuid' not in data:
             raise ValueError(f'Handle {self.handle} not found or invalid')
 
@@ -84,13 +114,12 @@ class DataShareClient:
             - mimeType: File MIME type
 
         Raises:
-            requests.RequestException: If API request fails
+            ConnectionError: If API request fails
         """
         item_id = self._get_item_id()
         url = f'{self.api_base}/items/{item_id}/bitstreams'
-        response = self.session.get(url, timeout=10)
-        response.raise_for_status()
-        return response.json()
+        data = self._get_json(url, timeout=10)
+        return data if isinstance(data, list) else []
 
     def get_download_url(self, bitstream_uuid: str) -> str:
         """

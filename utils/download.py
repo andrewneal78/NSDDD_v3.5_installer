@@ -1,19 +1,31 @@
+from __future__ import annotations
+
 """
 Download utilities for NSDDD v3 installation.
 
 Provides file download with progress tracking, resume capability, and error handling.
 """
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import os
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Callable, Optional
 import time
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
+
+try:
+    import requests
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+except ImportError:  # pragma: no cover - exercised on clean installer hosts
+    requests = None
+    HTTPAdapter = None
+    Retry = None
 
 
-def create_download_session(timeout: int = 300) -> requests.Session:
+def create_download_session(timeout: int = 300):
     """
     Create a requests session with proper timeout and retry configuration.
 
@@ -23,6 +35,9 @@ def create_download_session(timeout: int = 300) -> requests.Session:
     Returns:
         Configured requests.Session with retry strategy
     """
+    if requests is None:
+        return None
+
     session = requests.Session()
 
     # Create retry strategy for transient failures
@@ -109,6 +124,18 @@ def download_file(
     """
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
+
+    if requests is None:
+        return _download_file_stdlib(
+            url=url,
+            destination=destination,
+            resume=resume,
+            chunk_size=chunk_size,
+            timeout=timeout,
+            progress_callback=progress_callback,
+            expected_size=expected_size,
+            max_retries=max_retries,
+        )
 
     # Create session with proper timeout configuration
     session = create_download_session(timeout)
@@ -244,6 +271,132 @@ def download_file(
 
     elapsed = time.time() - start_time
     speed_mbps = (bytes_downloaded / (1024 ** 2)) / elapsed if elapsed > 0 else 0
+
+    return destination
+
+
+def _download_file_stdlib(
+    url: str,
+    destination: Path,
+    resume: bool,
+    chunk_size: int,
+    timeout: int,
+    progress_callback: Optional[Callable],
+    expected_size: Optional[int],
+    max_retries: int,
+) -> Path:
+    """Fallback downloader for machines that do not yet have requests."""
+    if shutil.which('curl'):
+        return _download_file_curl(
+            url=url,
+            destination=destination,
+            resume=resume,
+            timeout=timeout,
+            progress_callback=progress_callback,
+            expected_size=expected_size,
+        )
+
+    last_error = None
+
+    for attempt in range(max_retries):
+        downloaded_size = 0
+        headers = {'User-Agent': 'NSDDD-v3-Installer/1.0'}
+        mode = 'wb'
+
+        if destination.exists() and resume:
+            existing_size = destination.stat().st_size
+            if expected_size is not None and existing_size > expected_size:
+                print(f'\n  ⚠ Existing file is larger than expected ({existing_size / (1024**2):.0f} MB > {expected_size / (1024**2):.0f} MB)')
+                print('  ⚠ File may be corrupted from previous attempt')
+                print('  ⊗ Deleting corrupted file and starting fresh...\n')
+                destination.unlink()
+            else:
+                downloaded_size = existing_size
+                headers['Range'] = f'bytes={downloaded_size}-'
+                mode = 'ab'
+
+        request = Request(url, headers=headers)
+        try:
+            with urlopen(request, timeout=timeout) as response:
+                content_length = response.headers.get('content-length', '0')
+                try:
+                    content_length = int(content_length)
+                except ValueError:
+                    content_length = 0
+
+                if expected_size is not None:
+                    total_size = expected_size
+                elif downloaded_size > 0 and content_length > 0:
+                    total_size = downloaded_size + content_length
+                else:
+                    total_size = content_length
+
+                bytes_downloaded = downloaded_size
+                with open(destination, mode) as f:
+                    while True:
+                        chunk = response.read(chunk_size)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        bytes_downloaded += len(chunk)
+
+                        if total_size > 0 and bytes_downloaded > total_size:
+                            f.close()
+                            destination.unlink(missing_ok=True)
+                            raise IOError(f'Download exceeded expected size: {bytes_downloaded} > {total_size}')
+
+                        if progress_callback:
+                            display_downloaded = min(bytes_downloaded, total_size) if total_size > 0 else bytes_downloaded
+                            progress_callback(display_downloaded, total_size)
+
+                return destination
+        except (HTTPError, URLError, TimeoutError, OSError, IOError) as e:
+            last_error = e
+            if attempt < max_retries - 1:
+                wait_time = (attempt + 1) * 5
+                print(f'  ⚠ Connection issue, retrying in {wait_time}s (attempt {attempt + 1}/{max_retries})...')
+                time.sleep(wait_time)
+                continue
+            raise ConnectionError(f'Failed to download {url}: {e}') from e
+
+    raise ConnectionError(f'Failed to download {url}: {last_error}')
+
+
+def _download_file_curl(
+    url: str,
+    destination: Path,
+    resume: bool,
+    timeout: int,
+    progress_callback: Optional[Callable],
+    expected_size: Optional[int],
+) -> Path:
+    """Use curl when available to avoid Python SSL/bootstrap issues."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    command = [
+        'curl',
+        '-fL',
+        '--connect-timeout', str(timeout),
+        '--max-time', str(timeout * 20),
+        '-A', 'NSDDD-v3-Installer/1.0',
+        '-o', str(destination),
+        url,
+    ]
+    if resume:
+        command[1:1] = ['-C', '-']
+
+    result = subprocess.run(command, capture_output=True, text=True)
+    if result.returncode != 0:
+        stderr = result.stderr.strip() or result.stdout.strip() or 'curl download failed'
+        raise ConnectionError(f'Failed to download {url}: {stderr}')
+
+    if expected_size is not None:
+        actual_size = destination.stat().st_size
+        if actual_size != expected_size:
+            raise IOError(f'Download size mismatch: {actual_size} != {expected_size}')
+
+    if progress_callback and expected_size is not None:
+        progress_callback(expected_size, expected_size)
 
     return destination
 
