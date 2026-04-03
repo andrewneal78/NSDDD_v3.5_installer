@@ -43,18 +43,21 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 
 ### Step 2 — Open a terminal in that folder
 
-- **Mac, easiest:** in Finder, open the extracted installer folder, then right-click the folder itself or its parent location and choose **New Terminal at Folder** or **New Terminal Tab at Folder** if that option is available on your Mac.
-- **Mac, alternative:** press `Cmd + Space`, type `Terminal`, press Enter. Then type `cd ` (with a space), drag the extracted installer folder into the Terminal window, and press Enter. Do not paste the folder path by itself — if you do, Terminal will try to run the folder as a command and show `permission denied`.
-- **Windows, easiest:** in File Explorer, open the extracted installer folder, then right-click inside the folder and choose **Open in Terminal** if available.
-- **Windows, alternative:** open the `NSDDD_v3.5_installer` folder in File Explorer, click the address bar at the top, type `cmd`, press Enter
+- **Mac, easiest:** in Finder, open the extracted installer folder. Then right-click inside that folder and choose **New Terminal at Folder** or **New Terminal Tab at Folder** if that option is available.
+- **Mac, alternative:** open Terminal, type `cd ` (with a space), drag the extracted installer folder into the Terminal window, and press Enter.
+- **Mac, important:** do not paste the folder path by itself. For example, this is wrong: `/Users/you/NSDDD_v3.5_installer-main`. Terminal will try to run the folder as a program and show `permission denied`.
+- **Windows, easiest:** in File Explorer, open the extracted installer folder, click the address bar, type `cmd`, and press Enter. This opens Command Prompt in the correct folder.
+- **Windows, alternative:** in File Explorer, open the extracted installer folder, then right-click inside the folder and choose **Open in Terminal** if available.
+- **Windows, important:** do not run the installer from `C:\Windows\System32`. The prompt should show the extracted installer folder before you run anything.
 
 ---
 
 ### Step 3 — Run the installer
 
-```bash
-python3 install.py
-```
+| Platform | Command |
+|---|---|
+| **Mac / Linux** | `python3 install.py` |
+| **Windows** | `python install.py` |
 
 When prompted for the install directory, press Enter to accept the default location, or type a different path and press Enter.
 
@@ -189,6 +192,13 @@ If you use NSDDD v3.5 in research, please cite:
 
 **`python3` not found**
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
+
+**Windows says it cannot open `install.py`**
+This usually means Command Prompt or Terminal was opened in the wrong folder, often `C:\Windows\System32`. Open the extracted installer folder in File Explorer, click the address bar, type `cmd`, press Enter, then run:
+
+```bat
+python install.py
+```
 
 **`permission denied` after dragging the folder into Terminal (Mac)**
 This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. Instead, use:
