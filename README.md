@@ -43,16 +43,11 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 
 ### Step 2 — Open a terminal in that folder
 
-- **Mac, easiest:** in Finder, open the extracted installer folder. Then right-click inside that folder and choose **New Terminal at Folder** or **New Terminal Tab at Folder** if that option is available.
-- **Mac, alternative:** open Terminal, type `cd ` (with a space), drag the extracted installer folder into the Terminal window, and press Enter.
-- **Mac, important:** do not paste the folder path by itself. For example, this is wrong: `/Users/you/NSDDD_v3.5_installer-main`. Terminal will try to run the folder as a program and show `permission denied`.
-- **Windows, easiest:** in File Explorer, open the extracted installer folder. Click the address bar once so the full folder path appears, copy it, open Command Prompt, type `cd /d `, paste the copied path, and press Enter. Example:
+After extracting the ZIP, open the extracted installer folder.
 
-```bat
-cd /d "C:\Users\your-name\Downloads\NSDDD_v3.5_installer-main"
-```
-- **Windows, alternative:** in File Explorer, open the extracted installer folder, click the address bar, type `cmd`, and press Enter. On some Windows or Parallels setups this may still open in `C:\Windows\System32`, so check the prompt before running anything.
-- **Windows, important:** do not run the installer from `C:\Windows\System32`. If that happens, run `cd /d "C:\path\to\NSDDD_v3.5_installer-main"` first.
+- **Mac:** right-click the extracted folder and choose **Open in Terminal**, **New Terminal at Folder**, or **New Terminal Tab at Folder**.
+- **Windows:** right-click the extracted folder and choose **Open in Terminal** if available.
+- **If that option is not available:** open a terminal manually, move into the extracted folder, then run the installer from there.
 
 ---
 
@@ -213,7 +208,7 @@ python install.py
 ```
 
 **`permission denied` after dragging the folder into Terminal (Mac)**
-This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. Instead, use:
+This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. The easiest fix is to right-click the extracted folder and choose **Open in Terminal**. If needed, use:
 
 ```bash
 cd /path/to/NSDDD_v3.5_installer-main
