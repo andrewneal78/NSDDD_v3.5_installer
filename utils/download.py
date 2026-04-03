@@ -287,14 +287,18 @@ def _download_file_stdlib(
 ) -> Path:
     """Fallback downloader for machines that do not yet have requests."""
     if shutil.which('curl'):
-        return _download_file_curl(
-            url=url,
-            destination=destination,
-            resume=resume,
-            timeout=timeout,
-            progress_callback=progress_callback,
-            expected_size=expected_size,
-        )
+        try:
+            return _download_file_curl(
+                url=url,
+                destination=destination,
+                resume=resume,
+                timeout=timeout,
+                progress_callback=progress_callback,
+                expected_size=expected_size,
+                max_retries=max_retries,
+            )
+        except Exception as e:
+            print(f'  ⚠ curl download failed, falling back to Python downloader: {e}')
 
     last_error = None
 
@@ -369,6 +373,7 @@ def _download_file_curl(
     timeout: int,
     progress_callback: Optional[Callable],
     expected_size: Optional[int],
+    max_retries: int,
 ) -> Path:
     """Use curl when available to avoid Python SSL/bootstrap issues."""
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -377,6 +382,10 @@ def _download_file_curl(
         'curl',
         '-fL',
         '-#',
+        '--http1.1',
+        '--retry', str(max_retries),
+        '--retry-delay', '2',
+        '--retry-all-errors',
         '--connect-timeout', str(timeout),
         '--max-time', str(timeout * 20),
         '-A', 'NSDDD-v3-Installer/1.0',
