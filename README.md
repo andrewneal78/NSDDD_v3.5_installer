@@ -29,6 +29,8 @@ python3 --version
 
 If you see `Python 3.9` or higher, you're ready. If not (or if the command isn't found), install Python from https://www.python.org/downloads/ — on Windows, tick **Add Python to PATH** during install.
 
+**Windows note:** use **64-bit Python 3.11 or 3.12**. Do not use Python 3.14 for this installer.
+
 ---
 
 ### Step 1 — Download the installer
@@ -191,6 +193,9 @@ If you use NSDDD v3.5 in research, please cite:
 
 **`python3` not found**
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
+
+**Windows semantic search says the encoder is not loaded**
+This is usually a Python compatibility problem in the Windows environment. Use **64-bit Python 3.11 or 3.12**, delete the local `.venv` folder, and run `python install.py` again from the local Windows installer folder.
 
 **Windows says it cannot open `install.py`**
 This usually means Terminal or Command Prompt was opened in the wrong folder, often `C:\Windows\System32`. The easiest fix is to close that window, go back to the extracted installer folder, right-click that folder, choose **Open in Terminal**, then run:

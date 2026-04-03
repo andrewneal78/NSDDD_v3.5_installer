@@ -64,6 +64,20 @@ def _check_python() -> bool:
     return ok
 
 
+def _check_windows_python_compatibility() -> bool:
+    """Reject Windows Python versions known to break core ML dependencies."""
+    if platform.system() != 'Windows':
+        return True
+
+    v = sys.version_info
+    if (v.major, v.minor) >= (3, 14):
+        print('  ✗ Windows Python compatibility: Python 3.11 or 3.12 is required')
+        print('    PyTorch / sentence-transformers are not working reliably in this installer on Windows with Python 3.14.')
+        return False
+
+    return True
+
+
 def _check_disk(path: str) -> tuple:
     ok, available_gb, required_gb = check_disk_space(path, DISK_SPACE_REQUIRED_MIN_GB)
     status = '✓' if ok else '✗'
@@ -486,6 +500,12 @@ def main():
     if not py_ok:
         print()
         print('Python version too old. Please upgrade Python and try again.')
+        sys.exit(1)
+
+    if not _check_windows_python_compatibility():
+        print()
+        print('Please install 64-bit Python 3.11 or 3.12 on Windows, then run the installer again.')
+        print('If you already created `.venv`, delete that folder first so the installer can rebuild it with the supported Python version.')
         sys.exit(1)
 
     if _is_windows_unc_path(REPO_ROOT):
