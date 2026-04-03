@@ -1,4 +1,4 @@
-# NSDDD v3 Installer Requirements
+# NSDDD v3.5 Installer Requirements
 # All dependencies required for semantic search and analysis
 
 # Core semantic search and machine learning

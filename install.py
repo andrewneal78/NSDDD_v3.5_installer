@@ -1,5 +1,5 @@
 """
-NSDDD v3 — Interactive Installer
+NSDDD v3.5 — Interactive Installer
 
 Run this script once to download and install the dataset:
     python3 install.py
@@ -526,7 +526,8 @@ def main():
         print('Installation could not continue because required files failed:')
         for name in sorted(set(failed_required)):
             print(f'  - {name}')
-        print('Re-run `python3 install.py` to retry the missing required files.')
+        rerun_command = 'python install.py' if platform.system() == 'Windows' else 'python3 install.py'
+        print(f'Re-run `{rerun_command}` to retry the missing required files.')
         sys.exit(1)
 
     print()

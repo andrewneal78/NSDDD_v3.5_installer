@@ -20,12 +20,8 @@ Search by concept, filter by country, region, organisation, year, and more — e
 
 ### Before you start
 
-**Opening a terminal:**
-- **Mac:** press `Cmd + Space`, type `Terminal`, press Enter
-- **Windows:** press `Win + R`, type `cmd`, press Enter
-
 **Do you have Python 3.9+?**
-Most Macs do. Windows usually does not. To check, open a terminal and type:
+Most Macs do. Windows often does not. To check, open a terminal and type:
 
 ```
 python3 --version
@@ -43,11 +39,11 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 
 ### Step 2 — Open a terminal in that folder
 
-After extracting the ZIP, open the extracted installer folder.
+After extracting the ZIP, right-click the extracted installer folder and open a terminal there.
 
-- **Mac:** right-click the extracted folder and choose **Open in Terminal**, **New Terminal at Folder**, or **New Terminal Tab at Folder**.
-- **Windows:** right-click the extracted folder and choose **Open in Terminal** if available.
-- **If that option is not available:** open a terminal manually, move into the extracted folder, then run the installer from there.
+- **Mac:** choose **Open in Terminal**, **New Terminal at Folder**, or **New Terminal Tab at Folder**.
+- **Windows:** choose **Open in Terminal**.
+- **If you do not see that option:** open the extracted folder first, then open a terminal in that exact folder before running the installer.
 
 ---
 
@@ -76,7 +72,8 @@ The installer will walk you through:
 |---|---|
 | **Mac** | Double-click `Launch.command` in the installer folder |
 | **Windows** | Double-click `Launch.vbs` in the installer folder |
-| **Terminal** | `python3 launch.py` |
+| **Terminal (Mac / Linux)** | `python3 launch.py` |
+| **Terminal (Windows)** | `python launch.py` |
 
 Your browser opens at `http://localhost:8867`. The search interface loads automatically.
 
@@ -195,17 +192,13 @@ If you use NSDDD v3.5 in research, please cite:
 Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
 
 **Windows says it cannot open `install.py`**
-This usually means Command Prompt or Terminal was opened in the wrong folder, often `C:\Windows\System32`. To fix it:
-
-1. Open the extracted installer folder in File Explorer.
-2. Click the address bar once so the full folder path appears.
-3. Copy that path.
-4. In Command Prompt, run:
+This usually means Terminal or Command Prompt was opened in the wrong folder, often `C:\Windows\System32`. The easiest fix is to close that window, go back to the extracted installer folder, right-click that folder, choose **Open in Terminal**, then run:
 
 ```bat
-cd /d "PASTE-THE-COPIED-FOLDER-PATH-HERE"
 python install.py
 ```
+
+If the extracted ZIP created a nested folder with the same name, open the inner folder that actually contains `install.py`.
 
 **`permission denied` after dragging the folder into Terminal (Mac)**
 This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. The easiest fix is to right-click the extracted folder and choose **Open in Terminal**. If needed, use:
@@ -234,7 +227,7 @@ Wait briefly after launch. The server can take a few seconds to start. If needed
 Each launch starts a fresh server; old sessions are stopped automatically. If you experience freezing, close all browser tabs, wait 10 seconds, and reopen `http://localhost:8867`.
 
 **FileNotFoundError during installation**
-Check your internet connection. Re-run `python3 install.py` — downloads resume automatically.
+Check your internet connection. Re-run the installer command for your platform — downloads resume automatically.
 
 **Memory error when loading**
 Close other applications. 16 GB RAM recommended for comfortable use.
