@@ -37,6 +37,7 @@ ZIP_URL = f"https://github.com/{REPO_OWNER}/{REPO_NAME}/archive/refs/heads/{DEFA
 
 # Set NSDDD_AUTO_UPDATE=0 to disable automatic update application.
 AUTO_UPDATE_ENABLED = os.environ.get("NSDDD_AUTO_UPDATE", "1") != "0"
+SHOW_TRACEBACKS_ENABLED = os.environ.get("NSDDD_SHOW_TRACEBACKS", "1") != "0"
 HTTP_TIMEOUT_SECONDS = 8
 
 # Preserve local data/environments when overlaying ZIP updates.
@@ -318,7 +319,7 @@ def restart_self():
 
 
 def build_voila_command(py: str) -> list[str]:
-    return [
+    cmd = [
         py,
         "-m",
         "voila",
@@ -329,6 +330,9 @@ def build_voila_command(py: str) -> list[str]:
         "--strip_sources=True",
         "--progressive_rendering=True",
     ]
+    if SHOW_TRACEBACKS_ENABLED:
+        cmd.append("--show_tracebacks=True")
+    return cmd
 
 
 def open_browser_delayed(url: str, delay_seconds: float = 3.0):
