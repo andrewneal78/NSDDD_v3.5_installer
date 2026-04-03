@@ -376,6 +376,7 @@ def _download_file_curl(
     command = [
         'curl',
         '-fL',
+        '-#',
         '--connect-timeout', str(timeout),
         '--max-time', str(timeout * 20),
         '-A', 'NSDDD-v3-Installer/1.0',
@@ -385,10 +386,9 @@ def _download_file_curl(
     if resume:
         command[1:1] = ['-C', '-']
 
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, text=True)
     if result.returncode != 0:
-        stderr = result.stderr.strip() or result.stdout.strip() or 'curl download failed'
-        raise ConnectionError(f'Failed to download {url}: {stderr}')
+        raise ConnectionError(f'Failed to download {url} (curl exit code {result.returncode})')
 
     if expected_size is not None:
         actual_size = destination.stat().st_size
