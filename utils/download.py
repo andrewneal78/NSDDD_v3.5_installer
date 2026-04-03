@@ -436,8 +436,12 @@ def get_free_disk_space(path: str) -> dict:
         - total_mb: Total space in MB
         - total_gb: Total space in GB
     """
+    target = Path(path).expanduser()
+    while not target.exists() and target.parent != target:
+        target = target.parent
+
     try:
-        stat = os.statvfs(path)
+        stat = os.statvfs(target)
         free_bytes = stat.f_bavail * stat.f_frsize
         total_bytes = stat.f_blocks * stat.f_frsize
 
