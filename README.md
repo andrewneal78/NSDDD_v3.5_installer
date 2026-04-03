@@ -43,6 +43,7 @@ After extracting the ZIP, right-click the extracted installer folder and open a 
 
 - **Mac:** choose **Open in Terminal**, **New Terminal at Folder**, or **New Terminal Tab at Folder**.
 - **Windows:** choose **Open in Terminal**.
+- **If you are testing in Parallels or another VM:** copy or extract the installer into a local Windows folder such as `C:\Users\your-name\Downloads\...` first. Do not run the installer from a shared Mac path like `\\Mac\Home\...`.
 - **If you do not see that option:** open the extracted folder first, then open a terminal in that exact folder before running the installer.
 
 ---
@@ -199,6 +200,9 @@ python install.py
 ```
 
 If the extracted ZIP created a nested folder with the same name, open the inner folder that actually contains `install.py`.
+
+**Windows shows a path starting with `\\Mac\Home\...`**
+That means you are running from a shared Mac folder, not a local Windows folder. Copy or extract the installer into a local Windows location such as `C:\Users\your-name\Downloads\NSDDD_v3.5_installer-main`, then run it there.
 
 **`permission denied` after dragging the folder into Terminal (Mac)**
 This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. The easiest fix is to right-click the extracted folder and choose **Open in Terminal**. If needed, use:

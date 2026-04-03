@@ -135,6 +135,26 @@ def _check_ram() -> int:
     return int(ram_gb)
 
 
+def _is_windows_unc_path(path: Path | str) -> bool:
+    """Return True when running on Windows and the path is a UNC/network path."""
+    if platform.system() != 'Windows':
+        return False
+    return str(path).startswith('\\\\')
+
+
+def _abort_for_windows_network_share(path: Path):
+    print()
+    print('Windows network-share installs are not supported for this installer.')
+    print(f'Current path: {path}')
+    print()
+    print('Please copy or extract the installer to a local Windows folder first, for example:')
+    print(r'  C:\Users\your-name\Downloads\NSDDD_v3.5_installer-main')
+    print()
+    print('Then open a terminal in that local folder and run:')
+    print(r'  python install.py')
+    sys.exit(1)
+
+
 def _prompt_install_dir() -> Path:
     default = REPO_ROOT / DEFAULT_INSTALL_DIR
     print()
@@ -413,8 +433,14 @@ def main():
         print('Python version too old. Please upgrade Python and try again.')
         sys.exit(1)
 
+    if _is_windows_unc_path(REPO_ROOT):
+        _abort_for_windows_network_share(REPO_ROOT)
+
     # Determine install dir before disk check (need path to check disk)
     install_dir = _prompt_install_dir()
+
+    if _is_windows_unc_path(install_dir):
+        _abort_for_windows_network_share(install_dir)
 
     disk_ok, available_gb = _check_disk(str(install_dir))
     _check_ram()
