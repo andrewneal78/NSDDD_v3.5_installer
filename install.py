@@ -71,20 +71,67 @@ def _check_disk(path: str) -> tuple:
     return ok, available_gb
 
 
-def _check_ram() -> int:
-    """Return detected RAM in GB (0 if unknown)."""
+def _detect_ram_gb() -> float:
+    """Best-effort physical RAM detection without requiring third-party packages."""
     try:
         import psutil
-        ram_gb = psutil.virtual_memory().total / (1024 ** 3)
+        return psutil.virtual_memory().total / (1024 ** 3)
     except Exception:
-        ram_gb = 0
+        pass
+
+    system = platform.system()
+
+    try:
+        if system == 'Darwin':
+            result = subprocess.run(
+                ['sysctl', '-n', 'hw.memsize'],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            return int(result.stdout.strip()) / (1024 ** 3)
+
+        if system == 'Linux':
+            pages = os.sysconf('SC_PHYS_PAGES')
+            page_size = os.sysconf('SC_PAGE_SIZE')
+            return (pages * page_size) / (1024 ** 3)
+
+        if system == 'Windows':
+            import ctypes
+
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ('dwLength', ctypes.c_ulong),
+                    ('dwMemoryLoad', ctypes.c_ulong),
+                    ('ullTotalPhys', ctypes.c_ulonglong),
+                    ('ullAvailPhys', ctypes.c_ulonglong),
+                    ('ullTotalPageFile', ctypes.c_ulonglong),
+                    ('ullAvailPageFile', ctypes.c_ulonglong),
+                    ('ullTotalVirtual', ctypes.c_ulonglong),
+                    ('ullAvailVirtual', ctypes.c_ulonglong),
+                    ('ullAvailExtendedVirtual', ctypes.c_ulonglong),
+                ]
+
+            memory_status = MEMORYSTATUSEX()
+            memory_status.dwLength = ctypes.sizeof(MEMORYSTATUSEX)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(memory_status)):
+                return memory_status.ullTotalPhys / (1024 ** 3)
+    except Exception:
+        pass
+
+    return 0
+
+
+def _check_ram() -> int:
+    """Return detected RAM in GB (0 if unknown)."""
+    ram_gb = _detect_ram_gb()
     status = '✓' if ram_gb >= RAM_REQUIRED_GB or ram_gb == 0 else '⚠'
     if ram_gb > 0:
         print(f'  {status} RAM: {ram_gb:.0f} GB detected')
         if ram_gb < RAM_REQUIRED_GB:
             print(f'    (recommended {RAM_REQUIRED_GB} GB for loading model; may be slow)')
     else:
-        print(f'  ? RAM: could not detect (psutil not installed)')
+        print('  ? RAM: could not detect automatically')
     return int(ram_gb)
 
 
