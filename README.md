@@ -56,6 +56,8 @@ Click the green **Code** button on this page, then **Download ZIP**. Extract the
 python3 install.py
 ```
 
+When prompted for the install directory, press Enter to accept the default location, or type a different path and press Enter.
+
 The installer will walk you through:
 
 - Setting up an isolated Python environment (nothing changed system-wide)

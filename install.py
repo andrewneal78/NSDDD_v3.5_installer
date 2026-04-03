@@ -91,6 +91,7 @@ def _check_ram() -> int:
 def _prompt_install_dir() -> Path:
     default = REPO_ROOT / DEFAULT_INSTALL_DIR
     print()
+    print('Press Enter to accept the default location, or type a different folder path.')
     raw = input(f'Install directory [{default}]: ').strip()
     chosen = Path(raw) if raw else default
     return chosen
