@@ -15,22 +15,43 @@ class CountryLookup:
 
     Resolves the data file from:
     1. Explicit data_path argument
-    2. NSDDD_v3_workspace/model/countries_dict.json (relative to cwd)
+    2. install_config.json -> install_path/model/countries_dict.json
+    3. NSDDD_v3.5_workspace/model/countries_dict.json (relative to cwd)
+    4. NSDDD_v3_workspace/model/countries_dict.json (legacy fallback)
+    5. model/countries_dict.json (repo-local fallback)
     Falls back gracefully with empty data if not found.
     """
 
     def __init__(self, data_path: Optional[str] = None):
         self._data = {}
+        candidates = []
 
         if data_path is not None:
-            candidate = Path(data_path)
+            candidates.append(Path(data_path))
         else:
-            candidate = Path('NSDDD_v3_workspace/model/countries_dict.json')
+            root = Path.cwd()
+            config_path = root / 'install_config.json'
+            if config_path.exists():
+                try:
+                    install_path = json.loads(config_path.read_text(encoding='utf-8')).get('install_path')
+                    if install_path:
+                        candidates.append(Path(install_path).expanduser() / 'model' / 'countries_dict.json')
+                except Exception:
+                    pass
 
-        if candidate.exists():
+            candidates.extend([
+                root / 'NSDDD_v3.5_workspace' / 'model' / 'countries_dict.json',
+                root / 'NSDDD_v3_workspace' / 'model' / 'countries_dict.json',
+                root / 'model' / 'countries_dict.json',
+            ])
+
+        for candidate in candidates:
+            if not candidate.exists():
+                continue
             try:
                 with open(candidate, 'r', encoding='utf-8') as f:
                     self._data = json.load(f)
+                break
             except Exception:
                 self._data = {}
 
