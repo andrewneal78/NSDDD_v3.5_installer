@@ -69,7 +69,7 @@ When prompted for the install directory, press Enter to accept the default locat
 The installer will walk you through:
 
 - Setting up an isolated Python environment (nothing changed system-wide)
-- Downloading dataset files from Edinburgh DataShare (~5 GB) and the sentence encoder from HuggingFace (~420 MB)
+- Downloading required dataset files from Edinburgh DataShare (~4 GB) and the sentence encoder from HuggingFace (~420 MB)
 - Installing Python dependencies
 
 **Estimated time: 20–45 minutes** depending on internet speed. Downloads can be interrupted and resumed.
