@@ -24,6 +24,11 @@ except ImportError:  # pragma: no cover - exercised on clean installer hosts
     HTTPAdapter = None
     Retry = None
 
+# Allow the server to return up to this many extra bytes before treating the
+# download as corrupted.  DataShare manifests can disagree with actual file
+# sizes by a small margin (e.g. 3–4 KB) due to metadata padding differences.
+_SIZE_TOLERANCE = 10_000
+
 
 def create_download_session(timeout: int = 300):
     """
@@ -241,7 +246,7 @@ def download_file(
                     bytes_downloaded += len(chunk)
 
                     # Detect if we're receiving more data than expected
-                    if total_size > 0 and bytes_downloaded > total_size:
+                    if total_size > 0 and bytes_downloaded > total_size + _SIZE_TOLERANCE:
                         print(f'\n  ✗ ERROR: Received more data than expected!')
                         print(f'  Downloaded: {bytes_downloaded / (1024**2):.0f} MB')
                         print(f'  Expected: {total_size / (1024**2):.0f} MB')
@@ -344,7 +349,7 @@ def _download_file_stdlib(
                         f.write(chunk)
                         bytes_downloaded += len(chunk)
 
-                        if total_size > 0 and bytes_downloaded > total_size:
+                        if total_size > 0 and bytes_downloaded > total_size + _SIZE_TOLERANCE:
                             f.close()
                             destination.unlink(missing_ok=True)
                             raise IOError(f'Download exceeded expected size: {bytes_downloaded} > {total_size}')
@@ -401,7 +406,7 @@ def _download_file_curl(
 
     if expected_size is not None:
         actual_size = destination.stat().st_size
-        if actual_size != expected_size:
+        if abs(actual_size - expected_size) > _SIZE_TOLERANCE:
             raise IOError(f'Download size mismatch: {actual_size} != {expected_size}')
 
     if progress_callback and expected_size is not None:
