@@ -1,6 +1,6 @@
 # NSDDD v3.5 — National Security Documents Search
 
-Local semantic search across the National Security and Defence Documents Dataset (NSDDD) v3.5: **671 national security strategy documents from 118 countries, 1987–2025**, with 787,844 pre-computed text segment embeddings.
+Local semantic search across the [National Security and Defence Documents Dataset (NSDDD) v3.5](https://datashare.ed.ac.uk/handle/10283/9182): **671 national security strategy documents from 118 countries, 1987–2025**, with 787,844 pre-computed text segment embeddings.
 
 Search by concept, filter by country, region, organisation, year, and more — entirely offline after installation.
 
