@@ -10,7 +10,7 @@ Search by concept, filter by country, region, organisation, year, and more — e
 
 | | Minimum | Recommended |
 |---|---|---|
-| Python | 3.9 | 3.11+ |
+| Python | 3.10 | 3.11+ |
 | Disk space | 15 GB | 20 GB |
 | RAM | 8 GB | 16 GB |
 
@@ -20,14 +20,14 @@ Search by concept, filter by country, region, organisation, year, and more — e
 
 ### Before you start
 
-**Do you have Python 3.9+?**
+**Do you have Python 3.10+?**
 Most Macs do. Windows often does not. To check, open a terminal and type:
 
 ```
 python3 --version
 ```
 
-If you see `Python 3.9` or higher, you're ready. If not (or if the command isn't found), install Python from https://www.python.org/downloads/ — on Windows, tick **Add Python to PATH** during install.
+If you see `Python 3.10` or higher, you're ready. If not (or if the command isn't found), install Python from https://www.python.org/downloads/ — on Windows, tick **Add Python to PATH** during install.
 
 **Windows note**
 
@@ -199,7 +199,7 @@ If you use NSDDD v3.5 in research, please cite:
 ## Troubleshooting
 
 **`python3` not found**
-Install Python 3.9+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
+Install Python 3.10+ from https://www.python.org/downloads/ (tick "Add to PATH" on Windows).
 
 **Windows semantic search says the encoder is not loaded**
 This is usually a Python compatibility problem in the Windows environment.

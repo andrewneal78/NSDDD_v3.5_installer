@@ -134,7 +134,7 @@ DOWNLOADS = {
 }
 
 # System requirements
-PYTHON_VERSION_MIN = (3, 9)
+PYTHON_VERSION_MIN = (3, 10)
 DISK_SPACE_REQUIRED_MIN_GB = 15  # Minimum for model files only
 RAM_REQUIRED_GB = 16  # Recommended for loading 12GB embedding file
 
