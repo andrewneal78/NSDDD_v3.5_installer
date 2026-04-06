@@ -87,6 +87,8 @@ The installer will walk you through:
 
 Your browser opens at `http://localhost:8867`. The search interface loads automatically.
 
+If `Launch.command` (Mac) or `Launch.vbs` (Windows) does not work, open a terminal in the installer folder and run `python3 launch.py` instead.
+
 If macOS says `"Launch.command" Not Opened` because Apple could not verify it, open **System Settings > Privacy & Security**, scroll to the security message about `Launch.command`, click **Open Anyway**, then run it again. If needed, you can also Control-click `Launch.command`, choose **Open**, then confirm.
 
 > On startup, the launcher checks for installer updates before opening the interface.
