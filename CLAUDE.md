@@ -26,7 +26,29 @@ There is no build step, test suite, or linter configured in this repo.
 
 ## Versioning
 
-Version is stored in `VERSION` as a date-stamp string (`YYYY.MM.DD.N`). Bump it manually when releasing changes. `launch.py` reads this file at startup to compare against the remote `VERSION` on GitHub and auto-update if they differ.
+Version is stored in `VERSION` (project root) as a date-stamp string: `YYYY.MM.DD.N` where `N` is a counter starting at 1 that increments for multiple releases on the same day.
+
+**The `VERSION` file MUST be bumped for every change that affects user-facing behaviour**, including:
+- Any edit to `document_metadata_search_voila.ipynb` (the notebook is the search UI)
+- Changes to `_library/` (search engine logic)
+- Changes to `launch.py`, `install.py`, or `config.py`
+
+The auto-update mechanism in `launch.py` compares the local `VERSION` against the remote `VERSION` on GitHub. If they differ, the installer self-updates from GitHub. **If you change the notebook or any runtime file without bumping `VERSION`, users will not receive the update.**
+
+### How to bump
+
+1. Open `VERSION`.
+2. If today's date already appears, increment `N` (e.g. `2026.04.10.1` → `2026.04.10.2`).
+3. Otherwise, write today's date with `N=1` (e.g. `2026.04.11.1`).
+4. Save and commit alongside your other changes.
+
+## Bundled data files
+
+`document_metadata_3.5.csv` is committed to the repo root and is part of the installer package itself. It is **not** downloaded by `install.py` — users receive it when they clone the repo or download the ZIP from GitHub.
+
+It contains one row per document (672 rows): country, year, page length, word count, document type, language, and publishing ministry. The notebook loads this file at startup to compute per-country summary statistics (`COUNTRY_NORM_STATS`) used to render the normalisation context panel alongside search results.
+
+**Any change to `document_metadata_3.5.csv` must be accompanied by a VERSION bump** so that existing users receive the updated file via the auto-update mechanism.
 
 ## Architecture
 
