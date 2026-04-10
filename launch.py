@@ -330,6 +330,7 @@ def build_voila_command(py: str) -> list[str]:
         "--no-browser",
         "--strip_sources=True",
         "--progressive_rendering=True",
+        '--VoilaConfiguration.file_allowlist=[".*\\.(csv|svg|html)$", "XHR/.*"]',
     ]
     if SHOW_TRACEBACKS_ENABLED:
         cmd.append("--show_tracebacks=True")
