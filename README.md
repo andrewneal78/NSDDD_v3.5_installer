@@ -20,8 +20,17 @@ Search by concept, filter by country, region, organisation, year, and more — e
 
 ### Before you start
 
+**Opening a terminal**
+
+You will need to open a terminal (command line) to check your Python version and run the installer.
+
+- **Mac:** Press `Cmd + Space`, type "Terminal", then press Enter. Or open **Applications > Utilities > Terminal**.
+- **Windows:** Click the Start menu, type "Terminal" or "Command Prompt", then press Enter.
+
+---
+
 **Do you have Python 3.10+?**
-Most Macs do. Windows often does not. To check, open a terminal and type:
+Most Macs do. Windows often does not. To check, open a terminal (see above) and type:
 
 ```
 python3 --version
