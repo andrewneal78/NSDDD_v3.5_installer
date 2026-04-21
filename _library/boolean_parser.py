@@ -16,7 +16,6 @@ Operator precedence (lowest to highest): OR < AND < NOT < atoms
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import Union
 import re
 
 
@@ -50,7 +49,7 @@ class OrNode:
     right: 'Node'
 
 
-Node = Union[TermNode, NotNode, AndNode, OrNode]
+Node = TermNode | NotNode | AndNode | OrNode
 
 
 # ---------------------------------------------------------------------------

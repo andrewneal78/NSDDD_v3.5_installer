@@ -4,9 +4,9 @@ Country lookup utilities for NSDDD v3.
 Provides access to country data from the installed dataset.
 """
 
+from __future__ import annotations
 import json
 from pathlib import Path
-from typing import List, Optional, Tuple
 
 
 class CountryLookup:
@@ -22,7 +22,7 @@ class CountryLookup:
     Falls back gracefully with empty data if not found.
     """
 
-    def __init__(self, data_path: Optional[str] = None):
+    def __init__(self, data_path: str | None = None):
         self._data = {}
         candidates = []
 
@@ -55,7 +55,7 @@ class CountryLookup:
             except Exception:
                 self._data = {}
 
-    def list_all_countries(self, show_region: bool = False) -> List[Tuple]:
+    def list_all_countries(self, show_region: bool = False) -> list[tuple]:
         """
         Return a list of (num, iso_alpha3, country_name, region) tuples,
         sorted alphabetically by country name, numbered from 1.

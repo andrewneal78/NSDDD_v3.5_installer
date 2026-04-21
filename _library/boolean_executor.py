@@ -6,13 +6,13 @@ a model dictionary using a caller-supplied keyword search function.
 """
 
 from __future__ import annotations
-from typing import Callable, Dict, List, Tuple
+from typing import Callable
 
 from _library.boolean_parser import TermNode, AndNode, OrNode, NotNode, Node
 
 
 # Type alias for search results
-SearchResults = List[Tuple[str, float]]
+SearchResults = list[tuple[str, float]]
 
 
 class BooleanQueryExecutor:
@@ -69,7 +69,7 @@ class BooleanQueryExecutor:
     # Internal evaluation
     # ------------------------------------------------------------------
 
-    def _eval(self, node: Node) -> Dict[str, float]:
+    def _eval(self, node: Node) -> dict[str, float]:
         """Recursively evaluate a node, returning {segment_id: score}."""
         if isinstance(node, TermNode):
             return self._eval_term(node)
@@ -81,11 +81,11 @@ class BooleanQueryExecutor:
             return self._eval_or(node)
         raise TypeError(f'Unknown node type: {type(node)}')
 
-    def _eval_term(self, node: TermNode) -> Dict[str, float]:
+    def _eval_term(self, node: TermNode) -> dict[str, float]:
         results = self.keyword_search_func(node.term, self.model_dict)
         return dict(results)
 
-    def _eval_not(self, node: NotNode) -> Dict[str, float]:
+    def _eval_not(self, node: NotNode) -> dict[str, float]:
         # "All segments" means: the union of everything evaluated so far
         # vs what the sub-expression matches.  Here we return an empty
         # dict whose complement is computed by the parent AND/OR context.
@@ -96,7 +96,7 @@ class BooleanQueryExecutor:
         # so AND can identify them.  Use a sentinel value.
         return {seg_id: float('-inf') for seg_id in matching}
 
-    def _eval_and(self, node: AndNode) -> Dict[str, float]:
+    def _eval_and(self, node: AndNode) -> dict[str, float]:
         left = self._eval(node.left)
         right = self._eval(node.right)
 
@@ -117,11 +117,11 @@ class BooleanQueryExecutor:
             for seg_id in common
         }
 
-    def _eval_or(self, node: OrNode) -> Dict[str, float]:
+    def _eval_or(self, node: OrNode) -> dict[str, float]:
         left = self._eval(node.left)
         right = self._eval(node.right)
 
-        merged: Dict[str, float] = dict(left)
+        merged: dict[str, float] = dict(left)
         for seg_id, score in right.items():
             if seg_id in merged:
                 merged[seg_id] = self._combine(merged[seg_id], score)
@@ -138,7 +138,7 @@ class BooleanQueryExecutor:
         return a + b
 
 
-def _is_not_result(d: Dict[str, float]) -> bool:
+def _is_not_result(d: dict[str, float]) -> bool:
     """Return True if dict represents a NOT result (all values are -inf)."""
     return bool(d) and all(v == float('-inf') for v in d.values())
 

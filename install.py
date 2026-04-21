@@ -65,16 +65,7 @@ def _check_python() -> bool:
 
 
 def _check_windows_python_compatibility() -> bool:
-    """Reject Windows Python versions known to break core ML dependencies."""
-    if platform.system() != 'Windows':
-        return True
-
-    v = sys.version_info
-    if (v.major, v.minor) >= (3, 13):
-        print('  ✗ Windows Python compatibility: Python 3.11 or 3.12 is required')
-        print('    PyTorch / sentence-transformers are not working reliably in this installer on Windows with Python 3.13+.')
-        return False
-
+    """Check Windows Python compatibility. Python 3.10+ is supported."""
     return True
 
 
@@ -364,8 +355,6 @@ def _install_dependencies() -> Path:
         for name in missing:
             print(f'    - {name}')
         print('  Re-run the installer with a supported Python version, or install the missing packages into the selected environment.')
-        if platform.system() == 'Windows' and sys.version_info >= (3, 14):
-            print('  Windows note: Python 3.14 may not yet have compatible wheels for all ML dependencies.')
         sys.exit(1)
 
     print('  ✓ Core Python packages verified')
@@ -504,8 +493,7 @@ def main():
 
     if not _check_windows_python_compatibility():
         print()
-        print('Please install 64-bit Python 3.11 or 3.12 on Windows, then run the installer again.')
-        print('If you already created `.venv`, delete that folder first so the installer can rebuild it with the supported Python version.')
+        print('Please install Python 3.10 or later, then run the installer again.')
         sys.exit(1)
 
     if _is_windows_unc_path(REPO_ROOT):
