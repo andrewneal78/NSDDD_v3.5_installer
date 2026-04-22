@@ -220,9 +220,6 @@ python install.py
 
 If the extracted ZIP created a nested folder with the same name, open the inner folder that actually contains `install.py`.
 
-**Windows shows a path starting with `\\Mac\Home\...`**
-That means you are running from a shared Mac folder, not a local Windows folder. Copy or extract the installer into a local Windows location such as `C:\Users\your-name\Downloads\NSDDD_v3.5_installer-main`, then run it there.
-
 **`permission denied` after dragging the folder into Terminal (Mac)**
 This usually means the folder path was pasted on its own, so Terminal tried to run the folder as a program. The easiest fix is to right-click the extracted folder and choose **Open in Terminal**. If needed, use:
 
