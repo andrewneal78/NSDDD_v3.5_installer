@@ -4,6 +4,8 @@ Local semantic search across the [National Security and Defence Documents Datase
 
 Search by concept, filter by country, region, organisation, year, and more — entirely offline after installation.
 
+> **User guide:** For a fuller guide to using the search interface — including social-scientific search strategies, filter combinations, and worked examples — see [NSDDD_Search_Interface_Guide.pdf](NSDDD_Search_Interface_Guide.pdf) in this repository.
+
 ---
 
 ## Requirements
