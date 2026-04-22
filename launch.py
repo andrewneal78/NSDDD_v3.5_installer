@@ -293,21 +293,26 @@ def maybe_update(cwd: Path, no_update: bool) -> bool:
         return False
 
     if is_git_install(cwd):
+        print("Checking for updates (git)...")
         available, local, remote = check_git_update(cwd)
         if not available:
+            print("✓ Already up to date.")
             return False
-        print(f"🔄 Update available (git): {local[:7]} -> {remote[:7]}")
+        print(f"🔄 Update available: {local[:7]} -> {remote[:7]}")
         if AUTO_UPDATE_ENABLED:
             return apply_git_update(cwd)
         print("ℹ️  Auto-update disabled (NSDDD_AUTO_UPDATE=0).")
         return False
 
+    current = local_version(cwd)
+    print(f"Checking for updates (current: v{current or 'unknown'})...")
     available, local, remote = check_zip_update(cwd)
     if not available:
+        print("✓ Already up to date.")
         return False
 
     local_label = local or "(none)"
-    print(f"🔄 Update available (download install): {local_label} -> {remote}")
+    print(f"🔄 Update available: {local_label} -> {remote}")
     if AUTO_UPDATE_ENABLED:
         return apply_zip_update(cwd, remote)
     print("ℹ️  Auto-update disabled (NSDDD_AUTO_UPDATE=0).")
