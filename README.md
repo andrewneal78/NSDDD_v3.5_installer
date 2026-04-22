@@ -42,8 +42,7 @@ If you see `Python 3.10` or higher, you're ready. If not (or if the command isn'
 
 **Windows note**
 
-Any Python 3.10 or later is supported on Windows. If you need to install Python, use the latest stable release from https://www.python.org/downloads/ — tick **Add Python to PATH** during install. If you prefer a specific version, [python-3.12.10-amd64.exe](https://www.python.org/ftp/python/3.12.10/python-3.12.10-amd64.exe) (64-bit) or the ARM64 equivalent are known-good choices.
-
+Any Python 3.10 or later is supported on Windows. If you need to install Python, use the latest stable release from https://www.python.org/downloads/ — tick **Add Python to PATH** during install.
 ---
 
 ### Step 1 — Download the installer
