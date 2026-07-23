@@ -6,14 +6,16 @@ the National Security Documents Dataset (NSDDD) version 3.5 from Edinburgh DataS
 """
 
 # DataShare API endpoints
-DATASHARE_API_BASE = 'https://datashare.ed.ac.uk/rest'
+# DataShare runs DSpace 7, whose REST API lives under /server/api
+# (the legacy DSpace 6 /rest API was removed during the migration).
+DATASHARE_API_BASE = 'https://datashare.ed.ac.uk/server/api'
 
 # DataShare handle for NSDDD v3.5
 # https://datashare.ed.ac.uk/handle/10283/9182
 DATASHARE_HANDLE = '10283/9182'
 
-# Construct base URL for files
-DATASHARE_ITEM_URL = f'{DATASHARE_API_BASE}/handle/{DATASHARE_HANDLE}'
+# Public landing page for the dataset item
+DATASHARE_ITEM_URL = f'https://datashare.ed.ac.uk/handle/{DATASHARE_HANDLE}'
 
 # Download specifications
 DOWNLOADS = {

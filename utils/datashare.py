@@ -2,6 +2,13 @@
 Edinburgh DataShare REST API Client
 
 Module for interacting with Edinburgh DataShare API to list and retrieve files.
+
+DataShare runs DSpace 7, whose REST API is served under ``/server/api`` and
+returns HAL+JSON. Items expose their files through bundles: the handle resolves
+to an item UUID (``/pid/find``), the item lists its bundles
+(``/core/items/{uuid}/bundles``), and the ORIGINAL bundle lists the downloadable
+bitstreams (``/core/bundles/{uuid}/bitstreams``). Each bitstream is downloaded
+from ``/core/bitstreams/{uuid}/content``.
 """
 
 from typing import List, Dict, Optional
@@ -33,7 +40,7 @@ class DataShareClient:
         Initialise DataShare client.
 
         Args:
-            api_base: Base URL for DataShare API (e.g., https://datashare.ed.ac.uk/rest)
+            api_base: Base URL for DataShare API (e.g., https://datashare.ed.ac.uk/server/api)
             handle: Dataset handle (e.g., 10283/XXXXX)
         """
         self.api_base = api_base.rstrip('/')
@@ -72,6 +79,7 @@ class DataShareClient:
                 '--connect-timeout', str(timeout),
                 '--max-time', str(timeout * 3),
                 '-A', self.headers['User-Agent'],
+                '-H', f"Accept: {self.headers['Accept']}",
                 url,
             ],
             capture_output=True,
@@ -110,6 +118,10 @@ class DataShareClient:
         """
         Get item metadata from DataShare using handle lookup.
 
+        Resolves the persistent handle to a DSpace 7 item via the ``/pid/find``
+        endpoint, which redirects to the item resource. The HTTP fallbacks in
+        ``_get_json`` all follow redirects.
+
         Returns:
             Dictionary with item metadata including UUID, title, description
 
@@ -117,7 +129,7 @@ class DataShareClient:
             ConnectionError: If API request fails
             ValueError: If handle not found
         """
-        url = f'{self.api_base}/handle/{self.handle}'
+        url = f'{self.api_base}/pid/find?id=hdl:{self.handle}'
         data = self._get_json(url, timeout=10)
         if not data or 'uuid' not in data:
             raise ValueError(f'Handle {self.handle} not found or invalid')
@@ -156,9 +168,23 @@ class DataShareClient:
             return self._bitstreams
 
         item_id = self._get_item_id()
-        url = f'{self.api_base}/items/{item_id}/bitstreams'
+
+        # DSpace 7 exposes files through bundles. The distributable files live
+        # in the ORIGINAL bundle; THUMBNAIL/TEXT/LICENSE hold derived content.
+        bundles_url = f'{self.api_base}/core/items/{item_id}/bundles'
+        bundles_data = self._get_json(bundles_url, timeout=15, attempts=4)
+        bundles = bundles_data.get('_embedded', {}).get('bundles', []) \
+            if isinstance(bundles_data, dict) else []
+
+        original = next((b for b in bundles if b.get('name') == 'ORIGINAL'), None)
+        if original is None or 'uuid' not in original:
+            raise ValueError('No ORIGINAL bundle found for DataShare item')
+
+        bundle_id = original['uuid']
+        url = f'{self.api_base}/core/bundles/{bundle_id}/bitstreams?size=500'
         data = self._get_json(url, timeout=15, attempts=4)
-        self._bitstreams = data if isinstance(data, list) else []
+        self._bitstreams = data.get('_embedded', {}).get('bitstreams', []) \
+            if isinstance(data, dict) else []
         return self._bitstreams
 
     def get_download_url(self, bitstream_uuid: str) -> str:
@@ -171,7 +197,7 @@ class DataShareClient:
         Returns:
             Full download URL
         """
-        return f'{self.api_base}/bitstreams/{bitstream_uuid}/retrieve'
+        return f'{self.api_base}/core/bitstreams/{bitstream_uuid}/content'
 
     def find_file_by_name(self, filename: str) -> Dict:
         """
